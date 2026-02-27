@@ -1,0 +1,54 @@
+
+services:
+  config-service:
+    build: ./com.config-service.app
+    ports:
+      - "9090:9090"
+
+  department-service:
+    build: ./com.department-service.app
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - config-service
+      - postgres-department
+    ports:
+      - "8081:8081"
+
+  employee-service:
+    build: ./com.employee-service.app
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - config-service
+      - postgres-employee
+    ports:
+      - "8082:8082"
+
+  postgres-employee:
+    image: postgres
+    container_name: pg-employee-ms
+    environment:
+      POSTGRES_DB: employeemsdb
+      POSTGRES_USER: empms
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5411:5432"
+    volumes:
+      - pgempdata:/var/lib/postgresql/data
+
+  postgres-department:
+    image: postgres
+    container_name: pg-department-ms
+    environment:
+      POSTGRES_DB: departmentmsdb
+      POSTGRES_USER: depms
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5412:5432"
+    volumes:
+      - pgdeptdata:/var/lib/postgresql/data
+
+volumes:
+  pgempdata:
+  pgdeptdata:

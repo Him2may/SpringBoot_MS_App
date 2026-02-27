@@ -1,0 +1,107 @@
+services:
+  config-service:
+    build: ./com.config-service.app
+    container_name: config-service
+    ports:
+      - "9090:9090"
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9090/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  department-service:
+    build: ./com.department-service.app
+#    container_name: department-service
+    image: department-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      config-service:
+        condition: service_healthy
+      postgres-department:
+        condition: service_healthy
+#    ports:
+#      - "8081:8081"
+    networks:
+      - microservices-network
+    restart: on-failure
+
+  employee-service:
+    build: ./com.employee-service.app
+#    container_name: employee-service
+    image: employee-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      config-service:
+        condition: service_healthy
+      department-service:
+        condition: service_started
+      postgres-employee:
+        condition: service_healthy
+#    ports:
+#      - "8082:8082"
+    networks:
+      - microservices-network
+    restart: on-failure
+
+  postgres-employee:
+    image: postgres
+    container_name: pg-employee-ms
+    environment:
+      POSTGRES_DB: employeemsdb
+      POSTGRES_USER: empms
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5411:5432"
+    volumes:
+      - pgempdata:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U empms -d employeemsdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres-department:
+    image: postgres
+    container_name: pg-department-ms
+    environment:
+      POSTGRES_DB: departmentmsdb
+      POSTGRES_USER: depms
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5412:5432"
+    volumes:
+      - pgdeptdata:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U depms -d departmentmsdb" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx:/etc/nginx
+    depends_on:
+      - employee-service
+      - department-service
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge
+
+volumes:
+  pgempdata:
+  pgdeptdata:
