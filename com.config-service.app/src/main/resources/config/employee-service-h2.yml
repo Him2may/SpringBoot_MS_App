@@ -3,17 +3,20 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/employeemsdb
-    username: empms
-    password: password
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
   jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
-      show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
 feign:
   client:
     name: department-service
@@ -41,13 +44,13 @@ resilience4j:
         permittedNumberOfCallsInHalfOpenState: 3
         automaticTransitionFromOpenToHalfOpenEnabled: true
 
-#  retry:
-#    instances:
-#      employee-service:
-#        maxAttempts: 3
-#        waitDuration: 2s
-#        enableExponentialBackoff: true
-#        exponentialBackoffMultiplier: 2
+  retry:
+    instances:
+      employee-service:
+        maxAttempts: 3
+        waitDuration: 2s
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
 
 #  ratelimiter:
 #    instances:

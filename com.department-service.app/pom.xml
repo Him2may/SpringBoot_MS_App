@@ -93,7 +93,11 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 		<!-- Resilience4j Spring Boot 3 Starter -->
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>

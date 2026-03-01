@@ -24,6 +24,7 @@ public class EmployeeService {
 	private final EmployeeRepo empRepo;
 	private final DepartmentClient departClient;
 	private final Environment environment;
+	private static final String EMPLOYEE_SERVICE = "employee-service";
 	Logger logger = Logger.getLogger(getClass().getName());
 
 

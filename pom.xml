@@ -7,6 +7,7 @@
 	<groupId>com.parent-service.app</groupId>
 	<artifactId>parent-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
 	<name>com.parent-service.app</name>
 	<description>spring boot app for managing all microservices</description>
 	 
