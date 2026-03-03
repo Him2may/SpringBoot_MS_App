@@ -23,13 +23,14 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,circuitbreakers
+        include: health,refresh,info,metrics,circuitbreakers
   endpoint:
     health:
       show-details: always
 
 resilience4j:
   circuitbreaker:
+    circuit-breaker-aspect-order: 1
     instances:
       employee-service:
         registerHealthIndicator: true
@@ -41,13 +42,14 @@ resilience4j:
         permittedNumberOfCallsInHalfOpenState: 3
         automaticTransitionFromOpenToHalfOpenEnabled: true
 
-#  retry:
-#    instances:
-#      employee-service:
-#        maxAttempts: 3
-#        waitDuration: 2s
-#        enableExponentialBackoff: true
-#        exponentialBackoffMultiplier: 2
+  retry:
+    retry-aspect-order: 2
+    instances:
+      employee-service:
+        maxAttempts: 3
+        waitDuration: 2s
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
 
 #  ratelimiter:
 #    instances:

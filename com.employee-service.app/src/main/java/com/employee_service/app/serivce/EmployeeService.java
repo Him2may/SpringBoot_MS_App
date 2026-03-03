@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.annotation.PostConstruct;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -131,10 +132,13 @@ public class EmployeeService {
 	}
 
 	@CircuitBreaker(name = "employee-service", fallbackMethod = "getDefaultDepartment")
+	@Retry(name="employee-service")
 	public DepartmentDTO getEmployeesDepartment(long id) {
 		DepartmentDTO departmentDTO = null;
 		try {
+			logger.info("Before Sending request for employee ID :" + id);
 			ResponseEntity<DepartmentDTO> response = departClient.getDepartment(id);
+			logger.info("After Sending request for employee ID :" + id);
 			if (response.getBody() != null) {
 				departmentDTO = DepartmentDTO.builder()
 						.id(response.getBody().getId())
@@ -142,13 +146,19 @@ public class EmployeeService {
 						.headCount(response.getBody().getHeadCount())
 						.build();
 			}
+			else{
+				logger.info("No department found for the employee ID :" + id);
+				throw new RuntimeException("Department not found");
+			}
 		} catch (FeignException.NotFound e) {
 			logger.info("No department found for the employee ID :" + id);
+			throw new RuntimeException("Department not found");
 		}
 		return departmentDTO;
 	}
 
 	public DepartmentDTO getDefaultDepartment(long id, Exception e){
+		logger.info("Fallback Method called : getDefaultDepartment");
 		return DepartmentDTO.builder()
 				.id(1L).departmentName("Default").headCount(0).build();
 	}
