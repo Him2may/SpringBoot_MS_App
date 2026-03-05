@@ -1,0 +1,47 @@
+server:
+  port: 9192
+
+
+spring:
+  application:
+    name: security-service
+  config:
+    import: optional:configserver:http://localhost:9090
+
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+    instance-id: ${spring.application.name}:${server.port}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "gateway,health,info"
+  endpoint:
+    gateway:
+      enabled: true
+
+jwt:
+  secret: "asjkdasjkhdjashfjashfkjsahfkhasjkfhkashfklahfkjldhflksjadfhkljashflkjsdhfkjadshfjsd"
+  access-token-expiration: 900000
+  refresh-token-expiration: 86400000
+

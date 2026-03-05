@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import com.employee_service.app.entity.DepartmentDTO;
 
 @RefreshScope
-@FeignClient(name = "department-service", url = "${feign.client.url}" )
+@FeignClient(name = "department-service" )
 public interface DepartmentClient {
 
     @GetMapping("/api/department/get/{id}")

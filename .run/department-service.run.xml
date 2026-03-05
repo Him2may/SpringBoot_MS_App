@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="department-service" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" value="h2,native" />
+    <option name="ACTIVE_PROFILES" value="h2" />
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <module name="department-service" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.department_service.app.Application" />

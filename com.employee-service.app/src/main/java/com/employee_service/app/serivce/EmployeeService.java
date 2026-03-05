@@ -131,8 +131,8 @@ public class EmployeeService {
 		return ResponseEntity.ok(employeeList);
 	}
 
-	@CircuitBreaker(name = "employee-service", fallbackMethod = "getDefaultDepartment")
-	@Retry(name="employee-service")
+	@CircuitBreaker(name = EMPLOYEE_SERVICE, fallbackMethod = "getDefaultDepartment")
+	@Retry(name=EMPLOYEE_SERVICE)
 	public DepartmentDTO getEmployeesDepartment(long id) {
 		DepartmentDTO departmentDTO = null;
 		try {

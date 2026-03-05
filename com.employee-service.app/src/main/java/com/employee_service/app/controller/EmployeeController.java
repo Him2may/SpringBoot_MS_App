@@ -11,7 +11,7 @@ import java.lang.management.ManagementFactory;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/Employee")
+@RequestMapping("/api/employee")
 public class EmployeeController {
 
 	private final EmployeeService empService;

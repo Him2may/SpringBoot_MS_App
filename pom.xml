@@ -12,7 +12,9 @@
 	<description>spring boot app for managing all microservices</description>
 	 
 	<modules>
-	 	<module>com.employee-service.app</module>
+		<module>com.discovery-service.app</module>
+		<module>com.gateway-service.app</module>
+		<module>com.employee-service.app</module>
 		<module>com.department-service.app</module>
 		<module>com.config-service.app</module>
 	</modules>

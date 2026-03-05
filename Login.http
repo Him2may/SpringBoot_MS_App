@@ -1,0 +1,23 @@
+POST http://localhost:9191/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ab1cd@gmail.com",
+  "password": "password"
+}
+
+###
+POST http://localhost:9192/api/auth/refresh
+Content-Type: application/json
+
+{  "refreshToken": "2dc778e2-892d-44eb-a40b-9ac878966eaa"
+}
+
+###  "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhYmNkQGdtYWlsLmNvbSIsImlhdCI6MTc3Mjc0MzgxNCwiZXhwIjoxNzcyNzQ0NzE0fQ.v_UfE8gzDtdkZj3CIsCddS2Zy9-qVr1K9NqFd2qiYDarinJSHLKmJBBzRFLMlviXnbdHaf1wVZNLta0Chfxpag",
+POST http://localhost:9192/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "qbdcs@gmail.com",
+  "password": "password"
+}

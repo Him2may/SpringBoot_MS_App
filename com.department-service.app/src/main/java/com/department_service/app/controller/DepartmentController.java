@@ -2,6 +2,7 @@ package com.department_service.app.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import java.lang.management.ManagementFactory;
 
 @RestController
 @RequestMapping("/api/department")
+@RefreshScope
 public class DepartmentController {
 
 	@Value("${spring.datasource.url:NOT_FOUND}")
