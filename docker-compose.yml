@@ -1,7 +1,8 @@
 services:
+
   config-service:
     build: ./com.config-service.app
-    container_name: config-service
+    container_name: ${CONFIG_SERVER_CONTAINER_NAME:config-service}
     ports:
       - "9090:9090"
     networks:
@@ -13,29 +14,16 @@ services:
       retries: 10
       start_period: 40s
 
-  department-service:
-    build: ./com.department-service.app
-#    container_name: department-service
-    image: department-service
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-    depends_on:
-      config-service:
-        condition: service_healthy
-      postgres-department:
-        condition: service_healthy
-#    ports:
-#      - "8081:8081"
-    networks:
-      - microservices-network
-    restart: on-failure
-
   employee-service:
     build: ./com.employee-service.app
-#    container_name: employee-service
     image: employee-service
     environment:
-      SPRING_PROFILES_ACTIVE: docker
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:config-service}
+      DB_URL: jdbc:postgresql://${CONFIG_SERVER_CONTAINER_NAME}:5432/${EMP_POSTGRES_DB}
+      DB_USER: ${EMP_POSTGRES_USER}
+      DB_PASSWORD: ${EMP_POSTGRES_PASSWORD}
+      DB_DRIVER: ${DB_DRIVER}
+      DB_DIALECT: ${DB_DIALECT}
     depends_on:
       config-service:
         condition: service_healthy
@@ -43,19 +31,17 @@ services:
         condition: service_started
       postgres-employee:
         condition: service_healthy
-#    ports:
-#      - "8082:8082"
     networks:
       - microservices-network
     restart: on-failure
 
   postgres-employee:
     image: postgres
-    container_name: pg-employee-ms
+    container_name: ${EMP_DB_CONTAINER_NAME:pg-employee-ms}
     environment:
-      POSTGRES_DB: employeemsdb
-      POSTGRES_USER: empms
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${EMP_POSTGRES_DB}
+      POSTGRES_USER: ${EMP_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${EMP_POSTGRES_PASSWORD}
     ports:
       - "5411:5432"
     volumes:
@@ -68,13 +54,33 @@ services:
       timeout: 5s
       retries: 5
 
+
+  department-service:
+    build: ./com.department-service.app
+    image: department-service
+    environment:
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:config-service}
+      DB_URL: jdbc:postgresql://${CONFIG_SERVER_CONTAINER_NAME}:5432/${DEP_POSTGRES_DB}
+      DB_USER: ${DEP_POSTGRES_USER}
+      DB_PASSWORD: ${DEP_POSTGRES_PASSWORD}
+      DB_DRIVER: ${DB_DRIVER}
+      DB_DIALECT: ${DB_DIALECT}
+    depends_on:
+      config-service:
+        condition: service_healthy
+      postgres-department:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    restart: on-failure
+
   postgres-department:
     image: postgres
-    container_name: pg-department-ms
+    container_name: ${DEP_DB_CONTAINER_NAME:pg-department-ms}
     environment:
-      POSTGRES_DB: departmentmsdb
-      POSTGRES_USER: depms
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${DEP_POSTGRES_DB}
+      POSTGRES_USER: ${DEP_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${DEP_POSTGRES_PASSWORD}
     ports:
       - "5412:5432"
     volumes:
@@ -86,6 +92,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+
   nginx:
     image: nginx:alpine
     ports:
