@@ -61,9 +61,7 @@
             <version>0.12.3</version>
             <scope>runtime</scope>
         </dependency>
-        <!-- Used for circuit breaking in service-to-service communication
-           with Resilience4j in Spring Cloud. Provides service resiliency
-           features such as timeouts, retries, and fallbacks. -->
+        <!-- Resilience4j  -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
@@ -104,6 +102,12 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
     </dependencies>
     <dependencyManagement>
         <dependencies>

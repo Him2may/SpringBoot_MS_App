@@ -1,0 +1,86 @@
+jwt:
+  secret: "asjkdasjkhdjashfjashfkjsahfkhasjkfhkashfklahfkjldhflksjadfhkljashflkjsdhfkjadsh2398fjsd="
+  expiration: 3600000
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          global-cors:
+            add-to-simple-url-handler-mapping: true
+            cors-configurations:
+              '[/**]':
+                allowed-origin-patterns:
+                  - "*"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
+                allowedHeaders: "*"
+                exposed-headers:
+                  - Authorization
+                allowCredentials: true
+
+          routes:
+          - id: security-service
+            uri: lb://SECURITY-SERVICE
+            predicates:
+              - Path=/api/auth/**
+
+          - id: employee-service
+            uri: lb://EMPLOYEE-SERVICE
+            predicates:
+              - Path=/api/employee/**
+
+          - id: department-service
+            uri: lb://DEPARTMENT-SERVICE
+            predicates:
+              - Path=/api/department/**
+
+          - id: auth-api-docs
+            uri: lb://SECURITY-SERVICE
+            predicates:
+              - Path=/v3/api-docs/auth
+            filters:
+              - RewritePath=/v3/api-docs/auth, /v3/api-docs
+              - DedupeResponseHeader=Access-Control-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+
+          - id: employee-api-docs
+            uri: lb://EMPLOYEE-SERVICE
+            predicates:
+              - Path=/v3/api-docs/employee
+            filters:
+              - RewritePath=/v3/api-docs/employee, /v3/api-docs
+              - DedupeResponseHeader=Access-Control-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+
+
+          - id: department-api-docs
+            uri: lb://DEPARTMENT-SERVICE
+            predicates:
+              - Path=/v3/api-docs/department
+            filters:
+              - RewritePath=/v3/api-docs/department, /v3/api-docs
+              - DedupeResponseHeader=Access-Control-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+
+#          - id: swagger-ui
+#            uri: lb://GATEWAY-SERVICE
+#            predicates:
+#              - Path=/swagger-ui/**
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: Security Service
+        url: /v3/api-docs/auth
+      - name: Employee Service
+        url: /v3/api-docs/employee
+      - name: Department Service
+        url: /v3/api-docs/department
+  api-docs:
+    enabled: true
+  use-managment-port: false
+
