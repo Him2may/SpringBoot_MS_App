@@ -60,6 +60,8 @@ public class JwtService {
         try {
             return !isTokenExpired(token);
         } catch (JwtException | IllegalArgumentException e) {
+            log.error("Exception while  parsing JWT Toke: {}", token);
+            log.error("Error: {}", e.getMessage());
             return false;
         }
     }
