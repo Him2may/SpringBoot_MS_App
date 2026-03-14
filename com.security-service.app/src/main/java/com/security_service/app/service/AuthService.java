@@ -92,8 +92,10 @@ public class AuthService {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User user = userRepository.findByEmail(userPrincipal.getUsername()).get();
         String accessToken = jwtUtils.generateAccessToken(user.getEmail());
+        System.out.println("Token if present before " + refreshTokenRepository.findByUser(user).orElse(null));
         refreshTokenRepository.findByUser(user)
                 .ifPresent(refreshTokenRepository::delete);  // Delete old refresh token if exists and create new one
+        System.out.println("Token if present after " + refreshTokenRepository.findByUser(user).orElse(null));
         RefreshToken refreshToken = createRefreshToken(user);
         return buildAuthResponse(user, accessToken, refreshToken.getToken());
     }

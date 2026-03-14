@@ -1,8 +1,27 @@
+POST http://localhost:9191/api/department/add
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhYmNkQGdtYWlsLmNvbSIsImlhdCI6MTc3MzQzMTU1NywiZXhwIjoxNzczNDMyNDU3fQ.XL35Zn6MaD6G6HXZ-5Kvy3AblrNJzU2fWBb6VezMTHGbm8DcmXBRbxGvSojRuRMoBVAxVjyLnatchXo96crlFg
+
+{
+  "id": 3,
+  "departmentName": "a dep",
+  "headCount": 1000
+}
+
+
+###
+GET http://localhost:9191/api/department/getAll
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhYmNkQGdtYWlsLmNvbSIsImlhdCI6MTc3MzUwNzU3NSwiZXhwIjoxNzczNTA4NDc1fQ.MjJkTEro_m8IAs3nFUeihxnSgaRliiGbsSgECthwEPkq0wwXdymjEUJh9ee3bmzZ2_gio1JaCCh30Ypw7LLIjw
+
+
+
+###
 POST http://localhost:9191/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "ab1cd@gmail.com",
+  "email": "abcd@gmail.com",
   "password": "password"
 }
 
@@ -10,14 +29,17 @@ Content-Type: application/json
 POST http://localhost:9192/api/auth/refresh
 Content-Type: application/json
 
-{  "refreshToken": "2dc778e2-892d-44eb-a40b-9ac878966eaa"
+{  "refreshToken": "69ea51a9-47dd-42f7-aab9-e07daed51fe6"
 }
 
 ###  "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhYmNkQGdtYWlsLmNvbSIsImlhdCI6MTc3Mjc0MzgxNCwiZXhwIjoxNzcyNzQ0NzE0fQ.v_UfE8gzDtdkZj3CIsCddS2Zy9-qVr1K9NqFd2qiYDarinJSHLKmJBBzRFLMlviXnbdHaf1wVZNLta0Chfxpag",
-POST http://localhost:9192/api/auth/register
+POST http://localhost:9191/api/auth/register
 Content-Type: application/json
 
 {
   "email": "qbdcs@gmail.com",
-  "password": "password"
+  "password": "password",
+  "employeeId": 4
 }
+
+

@@ -27,7 +27,6 @@ public class JwtReactiveAuthenticationManager implements ReactiveAuthenticationM
         if (!jwtService.isTokenValid(token)) {
             return Mono.error(new BadCredentialsException("Invalid JWT token"));
         }
-
         String username = jwtService.extractUsername(token);
         return Mono.just(new UsernamePasswordAuthenticationToken(username, null, List.of()));
     }

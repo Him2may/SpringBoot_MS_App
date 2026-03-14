@@ -43,7 +43,6 @@ public class SecurityConfig {
     @Bean
     public AuthenticationWebFilter jwtAuthenticationWebFilter(JwtReactiveAuthenticationManager authManager,
                                                               JwtServerAuthenticationConverter converter) {
-        System.out.println("authManager : " + authManager.toString());
         AuthenticationWebFilter filter = new AuthenticationWebFilter(authManager);
         filter.setServerAuthenticationConverter(converter);
         return filter;
