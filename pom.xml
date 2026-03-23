@@ -17,6 +17,7 @@
 		<module>com.employee-service.app</module>
 		<module>com.department-service.app</module>
 		<module>com.config-service.app</module>
+		<module>com.security-service.app</module>
 	</modules>
 	 
 	<properties>

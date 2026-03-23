@@ -1,8 +1,22 @@
 services:
 
+  discovery-service:
+    build: ./com.discovery-service.app
+    container_name: ${DISC_SERVER_CONTAINER_NAME:-discovery-service}
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-network
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8761/actuator/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
   config-service:
     build: ./com.config-service.app
-    container_name: ${CONFIG_SERVER_CONTAINER_NAME:config-service}
+    container_name: ${CONFIG_SERVER_CONTAINER_NAME:-config-service}
     ports:
       - "9090:9090"
     networks:
@@ -18,13 +32,15 @@ services:
     build: ./com.employee-service.app
     image: employee-service
     environment:
-      CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:config-service}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:-config-service}
       DB_URL: jdbc:postgresql://${CONFIG_SERVER_CONTAINER_NAME}:5432/${EMP_POSTGRES_DB}
       DB_USER: ${EMP_POSTGRES_USER}
       DB_PASSWORD: ${EMP_POSTGRES_PASSWORD}
       DB_DRIVER: ${DB_DRIVER}
       DB_DIALECT: ${DB_DIALECT}
     depends_on:
+      discovery-service:
+        condition: service_started
       config-service:
         condition: service_healthy
       department-service:
@@ -37,7 +53,7 @@ services:
 
   postgres-employee:
     image: postgres
-    container_name: ${EMP_DB_CONTAINER_NAME:pg-employee-ms}
+    container_name: ${EMP_DB_CONTAINER_NAME:-pg-employee-ms}
     environment:
       POSTGRES_DB: ${EMP_POSTGRES_DB}
       POSTGRES_USER: ${EMP_POSTGRES_USER}
@@ -59,13 +75,15 @@ services:
     build: ./com.department-service.app
     image: department-service
     environment:
-      CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:config-service}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:-config-service}
       DB_URL: jdbc:postgresql://${CONFIG_SERVER_CONTAINER_NAME}:5432/${DEP_POSTGRES_DB}
       DB_USER: ${DEP_POSTGRES_USER}
       DB_PASSWORD: ${DEP_POSTGRES_PASSWORD}
       DB_DRIVER: ${DB_DRIVER}
       DB_DIALECT: ${DB_DIALECT}
     depends_on:
+      discovery-service:
+        condition: service_started
       config-service:
         condition: service_healthy
       postgres-department:
@@ -76,7 +94,7 @@ services:
 
   postgres-department:
     image: postgres
-    container_name: ${DEP_DB_CONTAINER_NAME:pg-department-ms}
+    container_name: ${DEP_DB_CONTAINER_NAME:-pg-department-ms}
     environment:
       POSTGRES_DB: ${DEP_POSTGRES_DB}
       POSTGRES_USER: ${DEP_POSTGRES_USER}
@@ -93,6 +111,62 @@ services:
       timeout: 5s
       retries: 5
 
+  security-service:
+    build: ./com.security-service.app
+    image: security-service
+    environment:
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:-config-service}
+      DB_URL: jdbc:postgresql://${CONFIG_SERVER_CONTAINER_NAME}:5432/${AUTH_POSTGRES_DB}
+      DB_USER: ${AUTH_POSTGRES_USER}
+      DB_PASSWORD: ${AUTH_POSTGRES_PASSWORD}
+      DB_DRIVER: ${DB_DRIVER}
+      DB_DIALECT: ${DB_DIALECT}
+    depends_on:
+      discovery-service:
+        condition: service_started
+      config-service:
+        condition: service_healthy
+      postgres-security:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    restart: on-failure
+
+  postgres-security:
+    image: postgres
+    container_name: ${AUTH_DB_CONTAINER_NAME:-pg-security-ms}
+    environment:
+      POSTGRES_DB: ${AUTH_POSTGRES_DB}
+      POSTGRES_USER: ${AUTH_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${AUTH_POSTGRES_PASSWORD}
+    ports:
+      - "5413:5432"
+    volumes:
+      - pgdeptdata:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U securityms -d securitydb" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  gateway-service:
+    build: ./com.gateway-service.app
+    image: gateway-service
+    environment:
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:-config-service}
+    ports:
+      - "9191:9191"
+    depends_on:
+      discovery-service:
+        condition: service_started
+      config-service:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    restart: on-failure
 
   nginx:
     image: nginx:alpine

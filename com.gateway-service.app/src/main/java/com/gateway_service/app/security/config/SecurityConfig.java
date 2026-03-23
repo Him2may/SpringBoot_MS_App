@@ -26,6 +26,7 @@ public class SecurityConfig {
                         .pathMatchers("/api/auth/**").permitAll()
                         .pathMatchers("/api/employee/getAll").permitAll()
                         .pathMatchers("/actuator/**").permitAll()
+                        .pathMatchers("/h2-console/**").permitAll()
                         .pathMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
