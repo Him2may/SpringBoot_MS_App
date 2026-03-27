@@ -49,6 +49,9 @@ public class GlobalExceptionHandler {
         if (ex.getMessage().contains("customer_email_key") || ex.getMessage().contains("Email already registered")) {
             message = "Email already exists";
         }
+        if (ex.getMessage().contains("unique_emp_id") || ex.getMessage().contains("employee_id")) {
+            message = "Employee ID already exists";
+        }
         ApiError error = new ApiError(
                 HttpStatus.CONFLICT.value(),
                 "DATA_INTEGRITY_VIOLATION",

@@ -1,5 +1,12 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Department Service" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <envs>
+      <env name="DB_URL" value="jdbc:postgresql://localhost:5432/departmentmsdb" />
+      <env name="DB_USER" value="depms" />
+      <env name="DB_PASSWORD" value="password" />
+      <env name="DB_DRIVER" value="org.postgresql.Driver" />
+      <env name="DB_DIALECT" value="org.hibernate.dialect.PostgreSQLDialect" />
+    </envs>
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <module name="department-service" />
     <selectedOptions>

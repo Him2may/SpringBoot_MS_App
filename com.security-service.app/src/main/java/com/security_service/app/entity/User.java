@@ -3,6 +3,7 @@ package com.security_service.app.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,7 +35,8 @@ public class User {
 	@Column(nullable = false)
 	private Role role = Role.EMPLOYEE;
 
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
+	@NotNull(message = "Employee Id is required")
 	private Long employeeId;
 }
 

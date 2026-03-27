@@ -34,9 +34,9 @@ public class JwtUtils {
         return createToken(claims,username,accessTokenExpiration);
     }
 
-    public String generateAccessToken(UserDetails userDetails,Map<String, Object> extraClaims) {
+    public String generateAccessToken(String username,Map<String, Object> extraClaims) {
         Map<String, Object> claims = new HashMap<>(extraClaims);
-        return createToken(claims,userDetails.getUsername(),accessTokenExpiration);
+        return createToken(claims,username,accessTokenExpiration);
     }
 
     private String createToken(Map<String, Object> claims, String username, Long accessTokenExpiration) {
@@ -63,12 +63,12 @@ public class JwtUtils {
     }
 
     // Extract expiration date
-    public Date extractExpiration(String token) {
+    private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
     // Extract specific claim
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
@@ -82,6 +82,12 @@ public class JwtUtils {
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    public Boolean validateResetToken(String token) {
+        String purpose = extractAllClaims(token).get("purpose",String.class);
+        System.out.println("purpose: " + purpose);
+        return !isTokenExpired(token) && purpose.equals("PASSWORD_RESET");
     }
 
     private SecretKey getSigningKey() {

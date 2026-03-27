@@ -11,6 +11,7 @@ jwt:
   secret: "asjkdasjkhdjashfjashfkjsahfkhasjkfhkashfklahfkjldhflksjadfhkljashflkjsdhfkjadsh2398fjsd="
   access-token-expiration: 900000
   refresh-token-expiration: 86400000
+  password-reset-url: "http://${API_SERVICE:localhost}:9191/api/auth/reset-password-form?token="
 
 springdoc:
   swagger-ui:

@@ -56,7 +56,6 @@ spring:
               - RewritePath=/v3/api-docs/employee, /v3/api-docs
               - DedupeResponseHeader=Access-Control-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
 
-
           - id: department-api-docs
             uri: lb://DEPARTMENT-SERVICE
             predicates:

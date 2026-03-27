@@ -17,6 +17,8 @@ services:
   config-service:
     build: ./com.config-service.app
     container_name: ${CONFIG_SERVER_CONTAINER_NAME:-config-service}
+    environment:
+      EUREKA_NAME: ${EUREKA_NAME}
     ports:
       - "9090:9090"
     networks:
@@ -33,11 +35,12 @@ services:
     image: employee-service
     environment:
       CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:-config-service}
-      DB_URL: jdbc:postgresql://${CONFIG_SERVER_CONTAINER_NAME}:5432/${EMP_POSTGRES_DB}
+      DB_URL: jdbc:postgresql://${EMP_DB_CONTAINER_NAME}:5432/${EMP_POSTGRES_DB}
       DB_USER: ${EMP_POSTGRES_USER}
       DB_PASSWORD: ${EMP_POSTGRES_PASSWORD}
       DB_DRIVER: ${DB_DRIVER}
       DB_DIALECT: ${DB_DIALECT}
+      EUREKA_NAME: ${EUREKA_NAME}
     depends_on:
       discovery-service:
         condition: service_started
@@ -46,6 +49,67 @@ services:
       department-service:
         condition: service_started
       postgres-employee:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    restart: on-failure
+
+  department-service:
+    build: ./com.department-service.app
+    image: department-service
+    environment:
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:-config-service}
+      DB_URL: jdbc:postgresql://${DEP_DB_CONTAINER_NAME}:5432/${DEP_POSTGRES_DB}
+      DB_USER: ${DEP_POSTGRES_USER}
+      DB_PASSWORD: ${DEP_POSTGRES_PASSWORD}
+      DB_DRIVER: ${DB_DRIVER}
+      DB_DIALECT: ${DB_DIALECT}
+      EUREKA_NAME: ${EUREKA_NAME}
+    depends_on:
+      discovery-service:
+        condition: service_started
+      config-service:
+        condition: service_healthy
+      postgres-department:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    restart: on-failure
+
+  security-service:
+    build: ./com.security-service.app
+    image: security-service
+    environment:
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:-config-service}
+      DB_URL: jdbc:postgresql://${AUTH_DB_CONTAINER_NAME}:5432/${AUTH_POSTGRES_DB}
+      DB_USER: ${AUTH_POSTGRES_USER}
+      DB_PASSWORD: ${AUTH_POSTGRES_PASSWORD}
+      DB_DRIVER: ${DB_DRIVER}
+      DB_DIALECT: ${DB_DIALECT}
+      EUREKA_NAME: ${EUREKA_NAME}
+    depends_on:
+      discovery-service:
+        condition: service_started
+      config-service:
+        condition: service_healthy
+      postgres-security:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    restart: on-failure
+
+  gateway-service:
+    build: ./com.gateway-service.app
+    image: gateway-service
+    environment:
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:-config-service}
+      EUREKA_NAME: ${EUREKA_NAME}
+    ports:
+      - "9191:9191"
+    depends_on:
+      discovery-service:
+        condition: service_started
+      config-service:
         condition: service_healthy
     networks:
       - microservices-network
@@ -70,28 +134,6 @@ services:
       timeout: 5s
       retries: 5
 
-
-  department-service:
-    build: ./com.department-service.app
-    image: department-service
-    environment:
-      CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:-config-service}
-      DB_URL: jdbc:postgresql://${CONFIG_SERVER_CONTAINER_NAME}:5432/${DEP_POSTGRES_DB}
-      DB_USER: ${DEP_POSTGRES_USER}
-      DB_PASSWORD: ${DEP_POSTGRES_PASSWORD}
-      DB_DRIVER: ${DB_DRIVER}
-      DB_DIALECT: ${DB_DIALECT}
-    depends_on:
-      discovery-service:
-        condition: service_started
-      config-service:
-        condition: service_healthy
-      postgres-department:
-        condition: service_healthy
-    networks:
-      - microservices-network
-    restart: on-failure
-
   postgres-department:
     image: postgres
     container_name: ${DEP_DB_CONTAINER_NAME:-pg-department-ms}
@@ -111,27 +153,6 @@ services:
       timeout: 5s
       retries: 5
 
-  security-service:
-    build: ./com.security-service.app
-    image: security-service
-    environment:
-      CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:-config-service}
-      DB_URL: jdbc:postgresql://${CONFIG_SERVER_CONTAINER_NAME}:5432/${AUTH_POSTGRES_DB}
-      DB_USER: ${AUTH_POSTGRES_USER}
-      DB_PASSWORD: ${AUTH_POSTGRES_PASSWORD}
-      DB_DRIVER: ${DB_DRIVER}
-      DB_DIALECT: ${DB_DIALECT}
-    depends_on:
-      discovery-service:
-        condition: service_started
-      config-service:
-        condition: service_healthy
-      postgres-security:
-        condition: service_healthy
-    networks:
-      - microservices-network
-    restart: on-failure
-
   postgres-security:
     image: postgres
     container_name: ${AUTH_DB_CONTAINER_NAME:-pg-security-ms}
@@ -142,7 +163,7 @@ services:
     ports:
       - "5413:5432"
     volumes:
-      - pgdeptdata:/var/lib/postgresql/data
+      - pgauthdata:/var/lib/postgresql/data
     networks:
       - microservices-network
     healthcheck:
@@ -150,23 +171,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-
-  gateway-service:
-    build: ./com.gateway-service.app
-    image: gateway-service
-    environment:
-      CONFIG_SERVER_URL: ${CONFIG_SERVER_CONTAINER_NAME:-config-service}
-    ports:
-      - "9191:9191"
-    depends_on:
-      discovery-service:
-        condition: service_started
-      config-service:
-        condition: service_healthy
-    networks:
-      - microservices-network
-    restart: on-failure
 
   nginx:
     image: nginx:alpine
@@ -187,3 +191,4 @@ networks:
 volumes:
   pgempdata:
   pgdeptdata:
+  pgauthdata:

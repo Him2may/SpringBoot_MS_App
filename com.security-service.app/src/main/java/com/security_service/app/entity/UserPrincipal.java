@@ -23,7 +23,7 @@ public class UserPrincipal implements UserDetails {
     private String role;
     private Boolean isActive;
     private Boolean isLocked;
-
+    private User user;
 
     public static UserPrincipal create(User user) {
         boolean isActive=true,isLocked=false;
@@ -32,19 +32,21 @@ public class UserPrincipal implements UserDetails {
                 .role(user.getRole().name())
                 .isActive(isActive)
                 .isLocked(isLocked)
+                .user(user)
                 .build();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+        return List.of(new SimpleGrantedAuthority(role.startsWith("ROLE_") ? role : "ROLE_" + role));
     }
 
     @Override
-    public @Nullable String getPassword() {
+    public String getPassword() {
         return this.password;
     }
 
+    @Override
     public String getUsername() {
         return this.email;
     }
@@ -62,11 +64,11 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 }

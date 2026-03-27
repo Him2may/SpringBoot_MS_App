@@ -2,6 +2,7 @@ package com.security_service.app.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -20,7 +21,9 @@ public class RegisterRequest {
 
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
+    @Size(max = 18, message = "Password must have at max 18 characters")
     private String password;
 
+    @NotNull(message = "Employee Id is required")
     private long employeeId;
 }

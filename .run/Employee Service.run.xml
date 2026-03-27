@@ -1,18 +1,18 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Security Service" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+  <configuration default="false" name="Employee Service" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <envs>
-      <env name="DB_URL" value="jdbc:postgresql://localhost:5432/securitydb" />
-      <env name="DB_USER" value="authms" />
-      <env name="DB_PASSWORD" value="password" />
-      <env name="DB_DRIVER" value="org.postgresql.Driver" />
       <env name="DB_DIALECT" value="org.hibernate.dialect.PostgreSQLDialect" />
+      <env name="DB_DRIVER" value="org.postgresql.Driver" />
+      <env name="DB_PASSWORD" value="password" />
+      <env name="DB_URL" value="jdbc:postgresql://localhost:5432/employeemsdb" />
+      <env name="DB_USER" value="empms" />
     </envs>
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
-    <module name="security-service" />
+    <module name="employee-service" />
     <selectedOptions>
       <option name="spring.boot.profiles" visible="false" />
     </selectedOptions>
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.security_service.app.Application" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.employee_service.app.Application" />
     <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
       <option name="credential" />
       <option name="region" />

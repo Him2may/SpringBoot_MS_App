@@ -1,10 +1,10 @@
 package com.security_service.app.controller;
 
 
-import com.security_service.app.dto.AuthResponse;
-import com.security_service.app.dto.LoginRequest;
-import com.security_service.app.dto.RefreshTokenRequest;
-import com.security_service.app.dto.RegisterRequest;
+import com.security_service.app.dto.*;
+import com.security_service.app.dto.password.ChangePassRequest;
+import com.security_service.app.dto.password.ForgotPasswordRequest;
+import com.security_service.app.dto.password.ResetPasswordRequest;
 import com.security_service.app.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +32,34 @@ public class AuthController {
         return ResponseEntity.ok(authResponse);
     }
 
-    @PostMapping("/refresh")
+    @PostMapping("/refresh-token")
     public ResponseEntity<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest){
         AuthResponse authResponse =authService.refreshTokens( refreshTokenRequest);
         return ResponseEntity.ok(authResponse);
     }
 
+    @PutMapping("/change-password")
+    public ResponseEntity<AuthResponse> changePassword(@Valid @RequestBody ChangePassRequest request){
+        AuthResponse authResponse =authService.changePassword(request);
+        return ResponseEntity.ok(authResponse);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> sendForgotPasswordLink(@RequestBody ForgotPasswordRequest request){
+        return ResponseEntity.ok(authService.forgotPassword(request));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request){
+        return ResponseEntity.ok()
+                .header("Content-Type", "text/html")
+                .body(authService.resetPassword(request));
+    }
+
+    @PostMapping("/reset-password-form")
+    public ResponseEntity<String> showResetForm(@RequestParam String token){
+        return ResponseEntity.ok()
+                .header("Content-Type", "text/html")
+                .body(authService.showResetForm(token));
+    }
 }
